@@ -9,10 +9,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
 import { ArquivoDto } from '../../core/models/arquivoDto';
 import { ArquivosService } from '../../core/services/arquivos.service';
 import { Observable, of } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, finalize, filter } from 'rxjs/operators';
+import { ConfirmationDialogComponent } from '../../layout/components/confirmation-dialog/confirmation-dialog';
 
 @Component({
   selector: 'app-file-list',
@@ -28,6 +31,8 @@ import { catchError, finalize } from 'rxjs/operators';
     MatInputModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    MatDialogModule,
+    MatChipsModule,
   ],
   templateUrl: './file-list.html',
   styleUrl: './file-list.scss',
@@ -41,7 +46,6 @@ export class FileListComponent implements OnInit {
     'tipoAdquirente',
     'tamanhoBytes',
     'mensagemErro',
-    'quantidadeTransacoes',
     'actions',
   ];
   dataSource = new MatTableDataSource<ArquivoDto>();
@@ -53,7 +57,8 @@ export class FileListComponent implements OnInit {
 
   constructor(
     private arquivosService: ArquivosService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +83,24 @@ export class FileListComponent implements OnInit {
       return error.error.mensagem;
     }
     return 'Ocorreu um erro inesperado.';
+  }
+
+  formatStatus(status: string): string {
+    if (status === 'NaoRecepcionado') {
+      return 'Não Recepcionado';
+    }
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Recepcionado':
+        return 'status-processed';
+      case 'NaoRecepcionado':
+        return 'status-not-received';
+      default:
+        return '';
+    }
   }
 
   loadFiles(): void {
@@ -122,7 +145,7 @@ export class FileListComponent implements OnInit {
         catchError((error) => {
           console.error('Error uploading file', error);
           this.openSnackBar(this.getErrorMessage(error), 'Fechar');
-          return of(null); 
+          return of(null);
         }),
         finalize(() => {
           this.uploading = false;
@@ -150,20 +173,33 @@ export class FileListComponent implements OnInit {
   }
 
   deleteFile(id: number): void {
-    if (confirm('Tem certeza que deseja excluir este arquivo?')) {
-      this.arquivosService
-        .apiArquivosIdDelete(id)
-        .pipe(
-          catchError((error) => {
-            console.error('Error deleting file', error);
-            this.openSnackBar(this.getErrorMessage(error), 'Fechar');
-            return of(null);
-          })
-        )
-        .subscribe(() => {
-          this.openSnackBar('Arquivo excluído com sucesso!', 'Fechar');
-          this.loadFiles(); 
-        });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: {
+        title: 'Confirmar Exclusão',
+        message: `Tem certeza que deseja excluir o arquivo de ID ${id}?`,
+      },
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(filter((result) => result))
+      .subscribe(() => {
+        this.arquivosService
+          .apiArquivosIdDelete(id)
+          .pipe(
+            catchError((error) => {
+              console.error('Error deleting file', error);
+              this.openSnackBar(this.getErrorMessage(error), 'Fechar');
+              return of(null);
+            })
+          )
+          .subscribe((result) => {
+            if (result !== null) {
+              this.openSnackBar('Arquivo excluído com sucesso!', 'Fechar');
+              this.loadFiles();
+            }
+          });
+      });
   }
 }

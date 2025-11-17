@@ -19,15 +19,11 @@
 
   .mat-elevation-z8 {
     width: 100%;
-    overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
+    overflow-x: auto; 
   }
 
   table {
     width: 100%;
-  }
-
-  .mat-column-status {
-    font-weight: bold;
   }
 
   .mat-column-actions {
@@ -41,3 +37,16 @@
     color: #757575;
   }
 }
+
+mat-chip.status-processed {
+  background-color: #4CAF50 !important; /* Green */
+  text-transform: uppercase;
+}
+
+mat-chip.status-not-received {
+  background-color: #f44336 !important; /* Red */
+  text-transform: uppercase;
+}
+
+
+
