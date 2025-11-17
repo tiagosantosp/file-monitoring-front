@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { ArquivoDetalhadoDto } from '../models/arquivoDetalhadoDto';
 import { ArquivoDto } from '../models/arquivoDto';
 import { UploadResultDto } from '../models/uploadResultDto';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
