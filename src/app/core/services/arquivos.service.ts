@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { ArquivoDetalhadoDto } from '../models/arquivoDetalhadoDto';
 import { ArquivoDto } from '../models/arquivoDto';
 import { UploadResultDto } from '../models/uploadResultDto';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ArquivosService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:7165/api/Arquivos';
+  private baseUrl = `${environment.baseUrl}/Arquivos`;
 
   apiArquivosExpiredDelete(): Observable<any> {
     return this.http.delete(`${this.baseUrl}/expired`);
