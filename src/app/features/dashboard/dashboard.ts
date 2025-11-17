@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { EstatisticasDto, DashboardService } from '../../core/api';
+import { EstatisticasDto } from '../../core/models/estatisticasDto';
+import { DashboardService } from '../../core/services/dashboard.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 

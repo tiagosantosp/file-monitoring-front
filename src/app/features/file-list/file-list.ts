@@ -9,7 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { ArquivoDto, ArquivosService } from '../../core/api';
+import { ArquivoDto } from '../../core/models/arquivoDto';
+import { ArquivosService } from '../../core/services/arquivos.service';
 import { Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 
