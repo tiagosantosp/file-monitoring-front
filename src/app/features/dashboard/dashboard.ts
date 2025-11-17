@@ -7,6 +7,7 @@ import { EstatisticasDto } from '../../core/models/estatisticasDto';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Import MatSnackBar and MatSnackBarModule
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +17,7 @@ import { catchError, map } from 'rxjs/operators';
     MatCardModule,
     MatProgressSpinnerModule,
     NgxChartsModule,
+    MatSnackBarModule, // Add MatSnackBarModule to imports
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -36,7 +38,10 @@ export class DashboardComponent implements OnInit {
     domain: ['#5AA454', '#A10A28'], // Green for received, Red for not received
   };
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private snackBar: MatSnackBar // Inject MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.statistics$ = this.dashboardService.apiDashboardEstatisticasGet().pipe(
@@ -55,8 +60,24 @@ export class DashboardComponent implements OnInit {
       }),
       catchError((error) => {
         console.error('Error fetching dashboard statistics', error);
+        this.openSnackBar(this.getErrorMessage(error), 'Fechar');
         return of(null);
       })
     );
+  }
+
+  openSnackBar(message: string, action: string): void {
+    this.snackBar.open(message, action, {
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'end',
+    });
+  }
+
+  private getErrorMessage(error: any): string {
+    if (error && error.error && error.error.mensagem) {
+      return error.error.mensagem;
+    }
+    return 'Ocorreu um erro inesperado ao carregar as estatísticas.';
   }
 }

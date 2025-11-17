@@ -65,6 +65,21 @@ export class FileListComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
+  openSnackBar(message: string, action: string): void {
+    this.snackBar.open(message, action, {
+      duration: 5000,
+      verticalPosition: 'top',
+      horizontalPosition: 'end',
+    });
+  }
+
+  private getErrorMessage(error: any): string {
+    if (error && error.error && error.error.mensagem) {
+      return error.error.mensagem;
+    }
+    return 'Ocorreu um erro inesperado.';
+  }
+
   loadFiles(): void {
     this.isLoading = true;
     this.arquivosService
@@ -72,9 +87,7 @@ export class FileListComponent implements OnInit {
       .pipe(
         catchError((error) => {
           console.error('Error fetching files', error);
-          this.snackBar.open('Erro ao carregar arquivos.', 'Fechar', {
-            duration: 3000,
-          });
+          this.openSnackBar(this.getErrorMessage(error), 'Fechar');
           return of([]);
         }),
         finalize(() => (this.isLoading = false))
@@ -108,14 +121,11 @@ export class FileListComponent implements OnInit {
       .pipe(
         catchError((error) => {
           console.error('Error uploading file', error);
-          this.snackBar.open('Erro ao fazer upload do arquivo.', 'Fechar', {
-            duration: 3000,
-          });
-          return of(null);
+          this.openSnackBar(this.getErrorMessage(error), 'Fechar');
+          return of(null); 
         }),
         finalize(() => {
           this.uploading = false;
-          // Clear the file input
           const fileInput = document.getElementById('fileInput') as HTMLInputElement;
           if (fileInput) {
             fileInput.value = '';
@@ -123,16 +133,17 @@ export class FileListComponent implements OnInit {
         })
       )
       .subscribe((result) => {
-        if (result?.sucesso) {
-          this.snackBar.open('Arquivo enviado com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
-          this.loadFiles(); // Reload files after successful upload
+        if (result === null) {
+          return;
+        }
+
+        if (result.sucesso) {
+          this.openSnackBar('Arquivo enviado com sucesso!', 'Fechar');
+          this.loadFiles();
         } else {
-          this.snackBar.open(
-            `Falha no upload: ${result?.mensagem || 'Erro desconhecido'}`,
-            'Fechar',
-            { duration: 3000 }
+          this.openSnackBar(
+            `Falha no upload: ${result.mensagem || 'Erro desconhecido.'}`,
+            'Fechar'
           );
         }
       });
@@ -145,17 +156,13 @@ export class FileListComponent implements OnInit {
         .pipe(
           catchError((error) => {
             console.error('Error deleting file', error);
-            this.snackBar.open('Erro ao excluir arquivo.', 'Fechar', {
-              duration: 3000,
-            });
+            this.openSnackBar(this.getErrorMessage(error), 'Fechar');
             return of(null);
           })
         )
         .subscribe(() => {
-          this.snackBar.open('Arquivo excluído com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
-          this.loadFiles(); // Reload files after successful deletion
+          this.openSnackBar('Arquivo excluído com sucesso!', 'Fechar');
+          this.loadFiles(); 
         });
     }
   }
