@@ -1,0 +1,43 @@
+.file-list-container {
+  padding: 20px;
+
+  h2 {
+    margin-bottom: 20px;
+    color: #3f51b5; /* Primary color */
+  }
+
+  .actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .filter-field {
+      width: 300px;
+    }
+  }
+
+  .mat-elevation-z8 {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .mat-column-status {
+    font-weight: bold;
+  }
+
+  .mat-column-actions {
+    width: 80px;
+    text-align: center;
+  }
+
+  .mat-row.mat-no-data-row {
+    text-align: center;
+    font-style: italic;
+    color: #757575;
+  }
+}
