@@ -24,15 +24,23 @@
 
       mat-card-title {
         font-size: 1.2em;
-        color: #673ab7; /* Accent color */
+        color: black; /* Accent color */
       }
 
       h3 {
         font-size: 2.5em;
         margin: 10px 0 0;
-        color: #3f51b5; /* Primary color */
+        color: rgb(90, 89, 89); /* Primary color */
       }
+      .recepcionados {
+      color: #4caf50; /* Green for success */
+      font-weight: bold;
+      }
+      .nao-recepcionados {
+        color: #f44336; /* Red for error */
+        font-weight: bold;
     }
+  }
   }
 
   .chart-container {
@@ -40,8 +48,11 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
   }
 
+ 
   .loading-spinner {
     display: flex;
     flex-direction: column;
@@ -54,4 +65,8 @@
       margin-bottom: 10px;
     }
   }
+}
+
+::ng-deep .ngx-charts-outer .arc-link-label {
+  font-size: 30px !important; /* Adjust the size as needed */
 }

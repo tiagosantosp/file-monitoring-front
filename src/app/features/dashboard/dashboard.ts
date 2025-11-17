@@ -25,15 +25,15 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; //
 export class DashboardComponent implements OnInit {
   statistics$: Observable<EstatisticasDto | null> | undefined;
   chartData: any[] = [];
-  view: [number, number] = [700, 400]; // Chart dimensions
-  showXAxis = true;
-  showYAxis = true;
+  view: [number, number] = [900, 500]; // Chart dimensions increased
+  showXAxis = false; // Changed for pie chart
+  showYAxis = false; // Changed for pie chart
   gradient = false;
   showLegend = true;
-  showXAxisLabel = true;
-  xAxisLabel = 'Status';
-  showYAxisLabel = true;
-  yAxisLabel = 'Quantidade de Arquivos';
+  showXAxisLabel = false; // Changed for pie chart
+  showYAxisLabel = false; // Changed for pie chart
+  showLabels = true; // Added for pie chart
+  doughnut = false; // Changed to false for a regular pie chart
   colorScheme: any = {
     domain: ['#5AA454', '#A10A28'], // Green for received, Red for not received
   };
