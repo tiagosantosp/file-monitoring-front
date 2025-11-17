@@ -1,0 +1,11 @@
+.sidenav-container {
+  height: calc(100vh - 64px); /* Adjust based on toolbar height */
+}
+
+mat-sidenav {
+  width: 200px;
+}
+
+mat-sidenav-content {
+  padding: 20px;
+}
