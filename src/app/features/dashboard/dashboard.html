@@ -1,0 +1,67 @@
+<div class="dashboard-container">
+  <h2>Dashboard de Monitoramento de Arquivos</h2>
+
+  <ng-container *ngIf="statistics$ | async as stats; else loading">
+    <div *ngIf="stats" class="stats-cards">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Total de Arquivos</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <h3>{{ stats.totalArquivos }}</h3>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Arquivos Recepcionados</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <h3>{{ stats.arquivosRecepcionados }}</h3>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Arquivos Não Recepcionados</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <h3>{{ stats.arquivosNaoRecepcionados }}</h3>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Percentual de Sucesso</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <h3>{{ stats.percentualSucesso | number: '1.2-2' }}%</h3>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div *ngIf="chartData.length > 0" class="chart-container">
+      <ngx-charts-bar-vertical
+        [view]="view"
+        [scheme]="colorScheme"
+        [results]="chartData"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [legend]="showLegend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+      >
+      </ngx-charts-bar-vertical>
+    </div>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="loading-spinner">
+      <mat-spinner></mat-spinner>
+      <p>Carregando estatísticas...</p>
+    </div>
+  </ng-template>
+</div>
