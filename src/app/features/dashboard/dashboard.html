@@ -1,5 +1,10 @@
 <div class="dashboard-container">
-  <h2>Dashboard de Monitoramento de Arquivos</h2>
+  <div class="dashboard-header">
+    <h2>Dashboard de Monitoramento de Arquivos</h2>
+    <button mat-raised-button color="accent" (click)="clearCache()">
+      <mat-icon>cached</mat-icon> Limpar Cache
+    </button>
+  </div>
 
   <ng-container *ngIf="statistics; else loading">
     <div *ngIf="statistics" class="stats-cards">

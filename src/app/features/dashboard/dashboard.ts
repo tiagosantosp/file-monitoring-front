@@ -8,6 +8,8 @@ import { DashboardService } from '../../core/services/dashboard.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button'; // Import MatButtonModule
+import { MatIconModule } from '@angular/material/icon'; // Import MatIconModule
 
 @Component({
   selector: 'app-dashboard',
@@ -18,6 +20,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     NgxChartsModule,
     MatSnackBarModule,
+    MatButtonModule, // Add MatButtonModule
+    MatIconModule, // Add MatIconModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -98,5 +102,20 @@ export class DashboardComponent implements OnInit {
       return error.error.mensagem;
     }
     return 'Ocorreu um erro inesperado ao carregar as estatísticas.';
+  }
+
+  clearCache(): void {
+    this.dashboardService.apiDashboardLimparCachePost().pipe(
+      catchError((error) => {
+        console.error('Error clearing cache', error);
+        this.openSnackBar(this.getErrorMessage(error), 'Fechar');
+        return of(null);
+      })
+    ).subscribe((response) => {
+      if (response) { // Assuming a successful response is not null
+        this.openSnackBar('Cache limpo com sucesso!', 'Fechar');
+        this.loadStatistics(); // Reload data after clearing cache
+      }
+    });
   }
 }
