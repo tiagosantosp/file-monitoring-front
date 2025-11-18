@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef } from '@angular/core'; // Import HostListener, ElementRef
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -7,7 +7,7 @@ import { EstatisticasDto } from '../../core/models/estatisticasDto';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Import MatSnackBar and MatSnackBarModule
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,34 +17,50 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; //
     MatCardModule,
     MatProgressSpinnerModule,
     NgxChartsModule,
-    MatSnackBarModule, // Add MatSnackBarModule to imports
+    MatSnackBarModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class DashboardComponent implements OnInit {
-  statistics$: Observable<EstatisticasDto | null> | undefined;
+  statistics: EstatisticasDto | null = null; // Changed from Observable to direct property
   chartData: any[] = [];
-  view: [number, number] = [900, 500]; // Chart dimensions increased
-  showXAxis = false; // Changed for pie chart
-  showYAxis = false; // Changed for pie chart
+  view: [number, number] = [900, 500]; // Initial chart dimensions
+  showXAxis = false;
+  showYAxis = false;
   gradient = false;
   showLegend = true;
-  showXAxisLabel = false; // Changed for pie chart
-  showYAxisLabel = false; // Changed for pie chart
-  showLabels = true; // Added for pie chart
-  doughnut = false; // Changed to false for a regular pie chart
+  showXAxisLabel = false;
+  showYAxisLabel = false;
+  showLabels = true;
+  doughnut = false;
   colorScheme: any = {
     domain: ['#5AA454', '#A10A28'], // Green for received, Red for not received
   };
 
   constructor(
     private dashboardService: DashboardService,
-    private snackBar: MatSnackBar // Inject MatSnackBar
+    private snackBar: MatSnackBar,
+    private elementRef: ElementRef // Inject ElementRef
   ) {}
 
   ngOnInit(): void {
-    this.statistics$ = this.dashboardService.apiDashboardEstatisticasGet().pipe(
+    this.loadStatistics();
+    this.onResize(); // Call onResize initially to set the correct size
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    const containerWidth = this.elementRef.nativeElement.querySelector('.chart-container').offsetWidth;
+    // Adjust height proportionally or set a fixed height for mobile
+    const newWidth = Math.min(containerWidth, 900); // Max width 900px
+    const newHeight = newWidth * (500 / 900); // Maintain aspect ratio
+    this.view = [newWidth, newHeight];
+  }
+
+  loadStatistics(): void {
+    this.statistics = null; // Clear previous data
+    this.dashboardService.apiDashboardEstatisticasGet().pipe(
       map((stats) => {
         this.chartData = [
           {
@@ -61,9 +77,12 @@ export class DashboardComponent implements OnInit {
       catchError((error) => {
         console.error('Error fetching dashboard statistics', error);
         this.openSnackBar(this.getErrorMessage(error), 'Fechar');
+        this.statistics = null; // Set to null on error
         return of(null);
       })
-    );
+    ).subscribe((stats) => {
+      this.statistics = stats; // Assign fetched data directly
+    });
   }
 
   openSnackBar(message: string, action: string): void {

@@ -48,5 +48,26 @@ mat-chip.status-not-received {
   text-transform: uppercase;
 }
 
+@media (max-width: 600px) {
+  .file-list-container {
+    padding: 10px;
+  }
+
+  .actions-row {
+    flex-direction: column;
+    align-items: stretch; /* Stretch items to fill the width */
+  }
+
+  .filter-field {
+    width: 100%; /* Full width on small screens */
+    margin-bottom: 10px; /* Add some space below the filter */
+  }
+
+  .actions-row button {
+    width: 100%; /* Make button full width */
+  }
+}
+
+
 
 
