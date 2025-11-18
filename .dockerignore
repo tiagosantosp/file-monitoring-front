@@ -1,0 +1,15 @@
+# Ignorar dependências do Node, pois elas serão instaladas dentro do contêiner
+node_modules
+
+# Ignorar o diretório de build do Angular
+dist
+
+# Ignorar arquivos de log do npm
+npm-debug.log
+
+# Ignorar arquivos de configuração do Docker, Git e do projeto
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+README.md
