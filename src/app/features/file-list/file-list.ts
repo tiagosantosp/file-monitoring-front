@@ -156,25 +156,33 @@ export class FileListComponent implements OnInit {
         }),
         finalize(() => {
           this.uploading = false;
-          const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+          const fileInput = document.getElementById(
+            'fileInput'
+          ) as HTMLInputElement;
           if (fileInput) {
             fileInput.value = '';
           }
+          this.loadFiles();
         })
       )
       .subscribe((result) => {
-        if (result === null) {
+        if (result === null || !result.sucesso || !result.arquivo) {
+          if (result && !result.sucesso) {
+            this.openSnackBar(
+              `Falha no upload: ${result.mensagem || 'Erro desconhecido.'}`,
+              'Fechar'
+            );
+          }
+          
           return;
         }
 
-        if (result.sucesso) {
-          this.openSnackBar('Arquivo enviado com sucesso!', 'Fechar');
-          this.loadFiles();
-        } else {
-          this.openSnackBar(
-            `Falha no upload: ${result.mensagem || 'Erro desconhecido.'}`,
-            'Fechar'
-          );
+        this.openSnackBar('Arquivo enviado com sucesso!', 'Fechar');
+        const currentData = this.dataSource.data;
+        this.dataSource.data = [result.arquivo, ...currentData];
+        this.loadFiles();
+        if (this.dataSource.paginator) {
+          this.dataSource.paginator.firstPage();
         }
       });
   }
@@ -192,21 +200,19 @@ export class FileListComponent implements OnInit {
       .afterClosed()
       .pipe(filter((result) => result))
       .subscribe(() => {
-        this.arquivosService
-          .apiArquivosIdDelete(id)
-          .pipe(
-            catchError((error) => {
-              console.error('Error deleting file', error);
-              this.openSnackBar(this.getErrorMessage(error), 'Fechar');
-              return of(null);
-            })
-          )
-          .subscribe((result) => {
-            if (result !== null) {
-              this.openSnackBar('Arquivo excluído com sucesso!', 'Fechar');
-              this.loadFiles();
-            }
-          });
+        this.arquivosService.apiArquivosIdDelete(id).subscribe({
+          next: () => {
+            this.openSnackBar('Arquivo excluído com sucesso!', 'Fechar');
+            this.dataSource.data = this.dataSource.data.filter(
+              (file) => file.id !== id
+            );
+            this.loadFiles();
+          },
+          error: (error) => {
+            console.error('Error deleting file', error);
+            this.openSnackBar(this.getErrorMessage(error), 'Fechar');
+          },
+        });
       });
   }
 }
