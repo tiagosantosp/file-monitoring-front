@@ -133,6 +133,13 @@ export class FileListComponent implements OnInit {
     const element = event.target as HTMLInputElement;
     if (element.files && element.files.length > 0) {
       const file = element.files[0];
+      // Check file extension
+      if (!file.name.endsWith('.txt')) {
+        this.openSnackBar('Apenas arquivos .txt são permitidos.', 'Fechar');
+        // Clear the file input to allow re-selection
+        element.value = '';
+        return;
+      }
       this.uploadFile(file);
     }
   }

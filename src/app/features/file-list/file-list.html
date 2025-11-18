@@ -8,7 +8,7 @@
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
-    <input type="file" #fileInput style="display: none" id="fileInput" (change)="onFileSelected($event)" />
+    <input type="file" #fileInput style="display: none" id="fileInput" (change)="onFileSelected($event)" accept=".txt" />
     <button mat-raised-button color="primary" (click)="fileInput.click()" [disabled]="uploading">
       <mat-icon>cloud_upload</mat-icon> Upload Arquivo
     </button>
